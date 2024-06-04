@@ -83,7 +83,13 @@ val departments = listOf(
 )
 @Composable
 fun DepartmentItem (d: Department) {
-    Row {
-        Text(text = "Mã đơn vị ")
-    }    
+    Row (
+        modifier = Modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(text = d.id)
+        Text(text = d.name)
+        Text(text = d.email)
+        Text(text = "")
+    }
 }

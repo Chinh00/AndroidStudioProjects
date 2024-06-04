@@ -1,84 +1,51 @@
-/*
 package com.superman.firebasedatabase.database
 
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.ui.res.fontResource
-import com.superman.firebasedatabase.database.exceptions.NotFoundByIdException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.tasks.asDeferred
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
-import kotlin.coroutines.CoroutineContext
 
-public interface IRepository {
-    public suspend fun FindByIdAsync(id: String): Deferred<Student>
-
-    public suspend fun AddAsync(student: Student): Deferred<Student>
-    public suspend  fun UpdateAsync(student: Student): Deferred<Student>
-    public  fun RemoveAsync(id: String): Boolean
-
-    public suspend fun GetAllAsync (): Deferred<List<Student>>
+interface IRepository<T> {
+    suspend fun findByIdAsync(id: String): T?
+    suspend fun addAsync(entity: T): T?
+    suspend fun updateAsync(entity: T): T?
+    suspend fun removeAsync(id: String): Boolean
+    suspend fun getAllAsync(): List<T>
 }
 
-
-
-class Repository : IRepository {
-    val ENTITY_SCHEMA = "Students"
-    val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    val firebaseHelper = FirebaseHelperImpl()
-
-
-    override suspend fun FindByIdAsync(id: String): Deferred<Student> = coroutineScope.async {
-        val student = firebaseHelper.database.reference.child(ENTITY_SCHEMA).child(id).get()
+class FirebaseRepository<T>(val entityName: String) : IRepository<T> {
+    private val firebaseHelper: FirebaseHelper = FirebaseHelperImpl()
+    override suspend fun findByIdAsync(id: String): T? {
+        val student = firebaseHelper.database.reference.child(entityName).child(id).get()
         val tmp = student.result
-
         if (tmp.exists()) {
-            return@async tmp.getValue(Student::class.java)!!
+            return tmp.value as T
         } else {
-            throw NotFoundByIdException("Student not found by id $id")
-        }
-
-    }
-    override suspend fun AddAsync(student: Student): Deferred<Student> {
-        return coroutineScope.async {
-            val studentId = firebaseHelper.database.reference.child(ENTITY_SCHEMA).push().key
-            val tmp = studentId?.let { firebaseHelper.database.reference.child(ENTITY_SCHEMA).child(it).setValue(student) }
-
-            if (tmp!!.isSuccessful) {
-                return@async tmp as Student
-            } else throw Exception("Student can not add $ENTITY_SCHEMA")
-        }
-
-    }
-
-    override suspend fun UpdateAsync(student: Student): Deferred<Student> {
-        return coroutineScope.async {
-            val entity = FindByIdAsync(student.Id).await()
-            val tmp = firebaseHelper.database.reference.child(ENTITY_SCHEMA).child(entity.Id).setValue(student)
-            if (tmp.isSuccessful) {
-                return@async FindByIdAsync(student.Id).await()
-            } else throw Exception("Student can not update $ENTITY_SCHEMA")
-        }
-
-    }
-
-    override fun RemoveAsync(id: String): Boolean {
-        TODO("")
-    }
-
-    override suspend fun GetAllAsync(): Deferred<List<Student>> {
-        return coroutineScope.async {
-            val students = firebaseHelper.database.reference.child(ENTITY_SCHEMA).get()
-            val tmp = students.result
-
-            if (tmp.exists()) {
-                return@async tmp.children.map { it.getValue(Student::class.java)!! }.toList()
-            } else throw Exception("Student not found")
+            return null
         }
     }
 
+    override suspend fun addAsync(entity: T): T? {
+        val studentId = firebaseHelper.database.reference.child(entityName).push().key
+        val tmp = studentId?.let { firebaseHelper.database.reference.child(entityName).child(it).setValue(entity) }
+        if (tmp!!.isSuccessful) {
+            return tmp as T
+        } else return null
+    }
 
-}*/
+    override suspend fun updateAsync(entity: T): T? {
+//        val idField = entityClass.getDeclaredField("id")
+//        idField.isAccessible = true
+//        val id = idField.get(entity) as String
+//        db.document(id).set(entity).await()
+//        return findByIdAsync(id)!!
+        return null;
+    }
+
+    override suspend fun removeAsync(id: String): Boolean {
+        return false;
+    }
+
+    override suspend fun getAllAsync(): List<T> {
+        val querySnapshot = firebaseHelper.database.reference.child(entityName).get()
+        val tmp = querySnapshot.result
+        return tmp.children.map { it as T }.toList()
+    }
+}

@@ -2,8 +2,12 @@ package com.superman.firebasedatabase.ui.department
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -13,14 +17,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.superman.firebasedatabase.database.domain.Department
+import com.superman.firebasedatabase.ui.components.Dropdown
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun DepartmentScreen () {
     val departmentScreenViewmodel: DepartmentScreenViewmodel = viewModel()
-
+    val coroutineScope = CoroutineScope(Dispatchers.IO)
     val id = remember {
         mutableStateOf("")
     }
@@ -45,26 +55,38 @@ fun DepartmentScreen () {
     val departmentId = remember {
         mutableStateOf("")
     }
+    val context = LocalContext.current
     Surface {
         Column (
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextField(value = id.value, onValueChange = { id.value = it}, label = { Text(text = "Mã đơn vị ")}, modifier = Modifier.padding(10.dp))
-            TextField(value = name.value, onValueChange = { name.value = it}, label = { Text(text = "Tên đơn vị ")} , modifier = Modifier.padding(10.dp))
-            TextField(value = email.value, onValueChange = { email.value = it}, label = { Text(text = "Email")} , modifier = Modifier.padding(10.dp))
+            TextField(value = name.value, onValueChange = { name.value = it}, label = { Text(text = "Tên đơn vị ")} , modifier = Modifier.padding(10.dp).fillMaxWidth())
+            TextField(value = email.value, onValueChange = { email.value = it}, label = { Text(text = "Email")} , modifier = Modifier.padding(10.dp).fillMaxWidth())
             TextField(value = website.value, onValueChange = { website.value = it}, label = { Text(
                 text = "Website "
-            )} , modifier = Modifier.padding(10.dp))
-            TextField(value = logo.value, onValueChange = { logo.value = it}, label = { Text(text = "Logo")}, modifier = Modifier.padding(10.dp))
+            )} , modifier = Modifier.padding(10.dp).fillMaxWidth())
+            TextField(value = logo.value, onValueChange = { logo.value = it}, label = { Text(text = "Logo")}, modifier = Modifier.padding(10.dp).fillMaxWidth())
             TextField(value = address.value, onValueChange = { address.value = it}, label = { Text(
                 text = "Địa chỉ "
-            )}, modifier = Modifier.padding(10.dp))
+            )}, modifier = Modifier.padding(10.dp).fillMaxWidth())
             TextField(value = phone.value, onValueChange = { phone.value = it}, label = { Text(text = "Số điện thoại ")}, modifier = Modifier.padding(10.dp))
-            TextField(value = departmentId.value, onValueChange = { departmentId.value = it}, label = { Text(
-                text = "Đơn vị cha "
-            )}, modifier = Modifier.padding(10.dp))
-            Button(onClick = {  }) {
+
+            Dropdown()
+            Button(onClick = {
+                coroutineScope.launch { departmentScreenViewmodel.HandleCreateDepartment(
+                    Department(
+                        id = id.value,
+                        name = name.value,
+                        email = email.value,
+                        website = website.value,
+                        logo = logo.value,
+                        address = address.value,
+                        phone = phone.value,
+                        departmentId = departmentId.value
+                    )
+                ) }
+            }) {
                 Text(text = "Thêm mới ")
             }
         }
