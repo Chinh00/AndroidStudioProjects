@@ -9,6 +9,7 @@ appcompat = "1.6.1"
 material = "1.12.0"
 googleGmsGoogleServices = "4.4.1"
 firebaseDatabase = "21.0.0"
+hiltNavigationCompose = "1.0.0"
 
 lifecycleRuntimeKtx = "2.8.0"
 activityCompose = "1.9.0"
@@ -17,6 +18,8 @@ navigationFragmentKtx = "2.7.7"
 navigationUiKtx = "2.7.7"
 kotlinxCoroutinesAndroid = "1.7.1"
 firebaseStorage = "21.0.0"
+hilt-version = "2.48"
+ksp-version = "1.9.20-1.0.14"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -43,9 +46,14 @@ androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt-version" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt-version" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
 
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-version" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-version" }

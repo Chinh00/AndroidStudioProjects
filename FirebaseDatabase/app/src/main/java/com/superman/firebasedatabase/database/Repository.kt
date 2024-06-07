@@ -2,7 +2,11 @@ package com.superman.firebasedatabase.database
 
 import kotlinx.coroutines.tasks.await
 
-interface IRepository<T> {
+
+
+interface IRootRepository {}
+
+interface IRepository<T> : IRootRepository {
     suspend fun findByIdAsync(id: String): T?
     suspend fun addAsync(entity: T): T?
     suspend fun updateAsync(entity: T): T?
@@ -25,9 +29,9 @@ class FirebaseRepository<T>(val entityName: String) : IRepository<T> {
     override suspend fun addAsync(entity: T): T? {
         val studentId = firebaseHelper.database.reference.child(entityName).push().key
         val tmp = studentId?.let { firebaseHelper.database.reference.child(entityName).child(it).setValue(entity) }
-        if (tmp!!.isSuccessful) {
-            return tmp as T
-        } else return null
+        return if (tmp!!.isSuccessful) {
+            findByIdAsync(studentId)
+        } else null
     }
 
     override suspend fun updateAsync(entity: T): T? {

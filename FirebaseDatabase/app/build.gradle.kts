@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -82,5 +84,12 @@ dependencies {
 
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.navigation:navigation-ui:2.7.7")
+
+
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
 
 }
